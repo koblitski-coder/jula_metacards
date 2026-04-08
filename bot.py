@@ -1,7 +1,6 @@
 import os
 import random
 import asyncio
-from flask import Flask, request
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.fsm.state import State, StatesGroup
@@ -12,7 +11,7 @@ from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.client.bot import DefaultBotProperties
 
 # ================== НАСТРОЙКИ ==================
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "ТВОЙ_ТОКЕН_ОТ_BOTFATHER")
+BOT_TOKEN = os.environ.get("BOT_TOKEN")  # вставьте токен в Replit Secrets
 PRACTITIONER_ID = 575159735
 CHANNEL_URL = "https://t.me/tigra_jula"
 CARDS_PATH = os.path.join(os.path.dirname(__file__), "cards")
@@ -20,7 +19,6 @@ CARDS_PATH = os.path.join(os.path.dirname(__file__), "cards")
 # ================== ИНИЦИАЛИЗАЦИЯ ==================
 bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML), session=AiohttpSession())
 dp = Dispatcher()
-app = Flask(__name__)  # Flask-приложение для webhook
 
 # ================== FSM ==================
 class UserState(StatesGroup):
@@ -137,15 +135,15 @@ async def send_answer(message: types.Message):
     ])
     await bot.send_message(user_id, answer, reply_markup=after_answer_kb)
     await message.answer("✅ Ответ отправлен.")
-import asyncio
 
+# ================== RUN POLLING ==================
 async def main():
-    from aiogram import Bot, Dispatcher
-    # Привязываем диспетчер к боту
-    dp.startup.register(lambda _: print("Бот запущен"))
+    print("Бот стартует через Polling...")
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
+    # Удаляем Webhook на всякий случай
+    import requests
+    if BOT_TOKEN:
+        requests.get(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteWebhook")
     asyncio.run(main())
-
-
