@@ -137,6 +137,15 @@ async def send_answer(message: types.Message):
     ])
     await bot.send_message(user_id, answer, reply_markup=after_answer_kb)
     await message.answer("✅ Ответ отправлен.")
+import asyncio
 
+async def main():
+    from aiogram import Bot, Dispatcher
+    # Привязываем диспетчер к боту
+    dp.startup.register(lambda _: print("Бот запущен"))
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())
 
 
